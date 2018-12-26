@@ -1,0 +1,19 @@
+#include<iostream>
+using namespace std;
+int main(void)
+{
+	long long a,b; 
+	cin>>a>>b;
+	double temp; 
+	if(a==-9223372036854775808LL && b==-1){
+		cout<<"9223372036854775808"; return 0;}
+	else 
+		temp=(double)a/(double)b;
+	 if(a%b==0)
+		cout<<a/b;
+	else if(temp<0)
+		cout<<a/b-1;
+	else
+		cout<<a/b;
+	return 0;
+}
