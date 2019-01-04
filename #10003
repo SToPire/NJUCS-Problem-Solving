@@ -1,0 +1,30 @@
+/*
+题目描述
+题目输入中包含若干行, 每行包括两个 int 范围内的整数 a,ba, ba,b, 对于每一行请输出 a+ba+ba+b.
+
+请注意, 题目的输入的行数是不定的, 以特殊字符 EOF 结束. 请自行查询关于 EOF 的相关资料.
+
+样例
+样例输入 1
+1 1
+-1 5
+样例输出 1
+2
+4
+*/
+#include<iostream>
+using namespace std;
+int main(void)
+{
+	int a,b;
+	long long sum;
+	cin>>a>>b;
+	while(!cin.eof())
+	{
+		sum=(long long)a+(long long)b;
+		cout<<sum<<endl;
+		cin>>a>>b;
+	}
+	return 0;
+}
+//int+int不一定是int,即使sum为long long 类型，由于两个int相加可能已经损失精度，直接令sum=a+b也不可以，必须进行强制类型转换
