@@ -1,0 +1,35 @@
+/*
+题目描述
+给出一个只包含小写字母的字符串, 输出其字典序最小的循环同构串.
+
+输入格式
+读入一个只包含小写字母的字符串 s.
+
+输出格式
+输出其字典序最小的循环同构串
+
+样例
+Input
+bca
+Output
+abc
+*/
+
+#include<iostream>
+#include<string>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int main(void)
+{
+	string input;
+	cin >> input;
+	int n = input.size();
+	string doubleinput = input+input;
+	vector<string> list;
+	for (int i = 0; i<n; i++)
+		list.push_back(doubleinput.substr(i,n));
+	sort(list.begin(), list.end());
+	cout << list[0];
+}
+//s.substr(pos, n)    截取s中从pos开始（包括0）的n个字符的子串
