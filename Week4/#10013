@@ -1,0 +1,81 @@
+/*
+题目描述
+读入一个 32位无符号数 y, 输出集合 {x∣x⊗y=x} 中的元素. 数据保证元素个数小于等于 40000按升序输出.
+其中 ⊗ 是位运算与.
+
+输入格式
+一个 32位无符号数 y,
+
+输出格式
+所有满足 x⊗y=x 的 x. 按升序输出.
+
+样例
+样例输入 1
+5
+样例输出 1
+0 1 4 5
+*/
+
+递归法：
+#include<iostream>
+#include<vector>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+void to_bin(bool* input, unsigned int n);
+void bit(bool* bin, int t, int count_1, vector<int> position);
+unsigned int to_dec(bool* input);
+vector<unsigned int> result;
+int main(void)
+{
+	unsigned int n;
+	cin >> n;
+	bool bin[32];
+	to_bin(bin, n);
+	vector<int> position;
+	for (int i = 0; i<32; i++)
+	{
+		if (bin[i] == 1)
+			position.push_back(i);
+	}
+	int count_1 = position.size();
+	bit(bin, 0, count_1, position);
+	sort(result.begin(), result.end());
+	for (vector<unsigned int>::iterator it = result.begin(); it != result.end(); it++)
+		cout << *it << " ";
+	return 0;
+}
+
+void to_bin(bool* input, unsigned int n)
+{
+	for (int i = 31; i >= 0; i--)
+	{
+		input[i] = n % 2;
+		n = n / 2;
+	}
+}
+
+unsigned int to_dec(bool* input)
+{
+	unsigned int sum = 0;
+	for (int i = 0; i<32; i++)
+	{
+		sum += input[i] * (unsigned int)pow(2, 31 - i);
+	}
+	return sum;
+}
+
+void bit(bool* bin, int t, int count_1, vector<int> position) //position数组记录了所有1的位置 递归法输出2^count_1种可能
+{
+	if (t == count_1)
+	{
+		result.push_back(to_dec(bin));
+		return;
+	}
+	else
+	{
+		bit(bin, t + 1, count_1, position);
+		bin[position[t]] = !bin[position[t]];
+		bit(bin, t + 1, count_1, position);
+	}
+}
