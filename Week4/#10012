@@ -1,0 +1,52 @@
+/*
+题目描述
+  读入n个int范围内的数字a1,a2...an,假设其中有c个不同的数字，令g(x)=i,其中i为最小的，满足ai=x的数.构造一个从{a1,a2,...an}->{1,2,...,c}的映射f满足
+  1.f(x)=f(y)<->x=y
+  2.f(x)<f(y)<->g(x)<g(y)
+  (即按照出现先后做离散化)
+输入格式
+第一行是一个正整数 n.
+
+第二行有 n 个 int 范围内数.
+
+输出格式
+输出 f(a1),f(a2),⋯,f(an)
+
+样例
+样例输入
+5
+-100 100 0 100 -100
+样例输出
+1 2 3 2 1
+
+数据范围与提示
+1≤n≤10^5
+*/
+
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int main(void)
+{
+	int n;
+	cin>>n;
+	vector<int> a(n);
+	for(int i=0;i<n;i++)
+		cin>>a[i];
+	vector<int> b;
+	vector<int>::iterator it1,it2;
+	for(it1=a.begin();it1!=a.end();it1++)
+	{
+		it2=find(a.begin(),it1,*it1);           //在a.begin()与it1之间寻找与it1的值相同的项 如果就是it1 说明it1首次出现 存入b数组
+		if(it2==it1)
+		b.push_back(*it1);
+ 	}
+	for(int i=0;i<b.size();i++)
+		for(it2=a.begin();it2!=a.end();it2++)
+			if(*it2==b[i])
+				*it2=i+1;
+	for(it1=a.begin();it1!=a.end();it1++)
+		cout<<*it1<<" ";
+	return 0;	
+}
