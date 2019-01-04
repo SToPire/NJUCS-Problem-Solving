@@ -1,0 +1,131 @@
+/*
+本题目主要用于介绍 vector 的基础使用.
+
+vector基本上可以看成是 C++ 中数组的一个优秀的替代品. 关于 vector 的定义有以下例子:
+
+vector<int> a(100, 0); 
+// 类比 int a[100];
+// 其中 `int` 指的是 `vector` 存放元素的类型, `100` 指大小, `0` 指元素的默认值, 该参数可以省略
+// 省略时会调用元素类型的默认构造函数.
+使用方法可以类比 C++ 的数组.
+
+我们还可以嵌套使用 vector, 比如定义元素类型为 vector<int> 的 vector, 可以类比 C++ 的二维数组.
+
+以下为, 输入两个正整数 n,m, 然后读入一个 n∗m 的整数矩阵, 最后将其行翻转输出 的例子
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+
+  vector< vector<int> > A(n, vector<int>(m, 0));
+  for (int i = 0; i < n; i++) 
+    for (int j = 0; j < m; j++) cin >> A[i][j];
+  for (int i = 0; i < n; i++) {
+    for (int j = m - 1; j >= 0; j--) cout << A[i][j] << ' ';
+    cout << endl;
+  }
+}
+
+/* 
+输入:
+2 4
+1 2 3 4
+5 6 7 8
+输出:
+4 3 2 1
+8 7 6 5
+*/
+本次题目要求, 读入两个 n∗m 的矩阵 A,B, 输出 A+B, A−B, A*B^{T}, 其中B^{T}为 B 的转置.
+
+输入格式
+第一行输入一个正整数 n,m.
+
+接下来 n 行, 每行 m 个整数, 其中第 i 行第 j 列表示 Ai,j
+
+接下来有一个空行.
+
+接下来 n 行, 每行 m 个整数, 其中第 i 行第 j 列表示 Bi,j
+
+输出格式
+按顺序输出 A+B, A−B, A*B^{T}, 用空行分割. 详细的请看样例.
+
+样例
+样例输入
+2 2
+1 0
+0 1
+
+2 2 
+2 2
+样例输出
+3 2
+2 3
+
+-1 -2
+-2 -1
+
+2 2
+2 2
+数据范围与提示
+保证所有中间结果都在 int 范围内.
+1≤n∗m≤10^5,1≤n∗n∗m≤10^61
+*/
+
+#include<iostream>
+#include<vector>
+using namespace std;
+int main(void)
+{
+	int n,m;
+	cin>>n>>m;
+	vector<vector<int> > arr1(n,vector<int>(m));
+	for(int i=0;i<n;i++)
+		for(int j=0;j<m;j++)
+			cin>>arr1[i][j];
+	vector<vector<int> > arr2(n,vector<int>(m));
+	for(int i=0;i<n;i++)
+		for(int j=0;j<m;j++)
+			cin>>arr2[i][j];
+	//加法		
+	for(int i=0;i<n;i++)
+	{
+		for(int j=0;j<m;j++)
+			cout<<arr1[i][j]+arr2[i][j]<<" ";
+		cout<<endl;	
+	}
+	cout<<endl;
+	//减法
+	for(int i=0;i<n;i++)
+	{
+		for(int j=0;j<m;j++)
+			cout<<arr1[i][j]-arr2[i][j]<<" ";
+		cout<<endl;	
+	}
+	cout<<endl;
+	//转置
+	vector<vector<int> > arr2_T(m,vector<int>(n));
+	for(int i=0;i<n;i++)
+		for(int j=0;j<m;j++)
+			arr2_T[j][i]=arr2[i][j];
+	//乘法
+	vector<vector<int> > mul(n,vector<int>(n,0));
+	for(int i=0;i<n;i++)
+	{
+		for(int j=0;j<n;j++)	
+			{
+				for(int k=0;k<m;k++)
+					mul[i][j]+=arr1[i][k]*arr2_T[k][j];
+			}
+	}
+	
+	for(int i=0;i<n;i++)
+	{
+		for(int j=0;j<n;j++)
+			cout<<mul[i][j]<<" ";
+		cout<<endl;		
+	}		
+	return 0;
+}
