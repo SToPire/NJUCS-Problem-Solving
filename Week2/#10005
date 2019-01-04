@@ -1,0 +1,41 @@
+/*
+题目描述
+读入两个 long long 范围内的整数 a,b, 输出 [a/b](向下取整),保证 b≠0.
+
+long long 的可表示范围是 [-9223372036854775808, 9223372036854775807]
+
+在 C++ 中, 如果要使用长整型的字面量需要在末尾加上 LL, 比如 if (x == 9223372036854775808LL)...
+
+
+输入格式
+两个 long long 范围内的整数 a,b
+
+输出格式
+输出 [a/b](向下取整)
+
+样例
+样例输入 1
+-7 2
+样例输出 1
+-4
+*/
+
+#include<iostream>
+using namespace std;
+int main(void)
+{
+	long long a,b; 
+	cin>>a>>b;
+	double temp; 
+	if(a==-9223372036854775808LL && b==-1){cout<<"9223372036854775808"; return 0;}//特殊处理边界
+	else 
+		temp=(double)a/(double)b;
+	if(a%b==0)
+		cout<<a/b;
+	else if(temp<0)
+		cout<<a/b-1;
+	else
+		cout<<a/b;
+	return 0;
+}
+//如果直接根据a/b大小于0判断是否减1，当(double)a/(double)b 在(-1,1)时，a/b均为0，必须特殊处理
