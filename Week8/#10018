@@ -1,0 +1,39 @@
+/*
+题目描述
+读入一个n，输出所有小于等于n的正整数的因子个数和 mod 233
+
+输入格式
+一个整数 n.
+
+输出格式
+一个整数表示答案.
+
+样例
+样例输入 1
+4
+样例输出 1
+8
+数据范围与提示
+1≤n≤10^12
+*/
+//该题就是#10014中m=n的情形，数学上容易理解。
+#include<iostream>
+#include<cmath> 
+using namespace std;
+int main(void)
+{
+	long long n;
+	cin>>n;
+	int result=0;
+	long long division=sqrt(n);
+	long long * temp=new long long[division+5];
+	for(long long i=1;i<=division+1;i++)
+	{
+		temp[i]=n/i;
+		if(temp[i]>division) {result+=temp[i]%233; result%=233;}
+	}
+	long long * num= new long long[division+5];
+	for(int i=1;i<=division;i++) num[i]=temp[i]-temp[i+1];
+	for(int i=1;i<=division;i++) {result+=((i%233)*(num[i]%233))%233; result%=233;}
+	cout<<result;
+}
