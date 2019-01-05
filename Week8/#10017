@@ -1,0 +1,79 @@
+/*
+题目描述
+给出一个只包含 int范围内非负整数, 加号, 乘号和空格的表达式, 计算表达式的值.
+
+保证中间结果和最后结果是 int 范围内的数.
+
+保证表达式以数字开头, 数字结尾, 相邻两个数字之间只包含一个运算符以及若干空格.
+
+保证任意两个相邻运算符中间只包含一个数字以及若干空格.
+
+除了 0 以外数字不会有前导 0.
+
+总而言之就是保证是个合法的表达式.
+
+输入格式
+一行字符串表示表达式.
+
+输出格式
+结果.
+
+样例
+样例输入 1
+5  +   3* 3
+样例输出 1
+14
+数据范围与提示
+字符串长度不超过 100
+*/
+
+#include<iostream>
+#include<string>
+#include<vector>
+#include<sstream>
+using namespace std;
+int main(void)
+{
+	char temp[100]{};
+	char a = '\0';
+	int i = 0;
+	while (a != '\n') { a = cin.get(); if (!isspace(a)) { temp[i] = a; i++; } else continue; } //读取输入并去空格
+	string input = temp;
+	vector<int> PPlus{ -1 };
+	for (int i = 1; i < input.size(); i++)
+		if (temp[i] == '+') PPlus.push_back(i);
+	PPlus.push_back(input.size());                        //PPlus中存放了-1,‘+’的下标，和input.size()
+	vector<string> pieces;
+	vector<int>::iterator it1 = PPlus.begin();
+	vector<int>::iterator it2 = PPlus.begin() + 1;
+	for (; it2 != PPlus.end(); it1++, it2++)
+		pieces.push_back(input.substr(*it1 + 1, *it2 - *it1 - 1));   //按照加号截断表达式，得到只含乘号和数字的表达式
+	int sum = 0;
+	for (vector<string>::iterator iterating = pieces.begin(); iterating != pieces.end(); iterating++)
+	{
+		stringstream strTOint;
+		int temp = 0, result = 1;
+		for (string::iterator itstr = iterating->begin(); itstr != iterating->end(); itstr++) //遍历各表达式
+		{
+			if (*itstr != '*' && itstr != iterating->end() - 1)
+				strTOint << *itstr;
+			else if (itstr == iterating->end() - 1) //已到一段表达式末尾
+			{
+				strTOint << *itstr;
+				strTOint >> temp;
+				strTOint.clear();
+				result *= temp;
+			}
+			else  //当前为乘号
+			{
+				strTOint >> temp;
+				strTOint.clear();
+				result *= temp;
+			}
+		}
+		sum += result;
+	}
+	cout << sum;
+	system("pause");
+	return 0;
+}
