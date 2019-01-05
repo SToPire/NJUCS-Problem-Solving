@@ -1,0 +1,95 @@
+题目描述
+网络上主机的 IPv4 地址由 4 个 8 位整数 (参考数据类型 uint8_t)构成, 分成两部分 - 网络地址 (用于判定主机属于哪个子网) 和主机号 (用于在子网中判定是哪台主机), 区分两者的方法是使用子网掩码. (子网掩码二进制中的 0 和 1 将 IP 分割成主机号和网络地址.)
+例如某台主机的 IP 地址为 114.212.83.105, 子网掩码是 255.255.255.0, 那么将 IP 地址与子网掩码进行二进制与操作, 得到 网络地址 114.212.83.0, 主机号是 105.
+再例如某台主机的 IP 地址为 192.168.222.33, 子网掩码是 255.255.240.0, 那么将 IP 地址与子网掩码进行二进制与操作, 得到 网络地址 192.168.208.0, 主机号是 14.33.
+处于不同子网的主机之间的通信需要经过路由器 (Router), 而处于同一个子网的主机之间的通信则不需要, 仅需要交换机 (Switch).
+而一个子网可以容纳主机的最大数量, 则是最多能有多少个主机属于该子网 (不考虑主机号二进制位全 0 和全 1 的IP ). 比如子网 114.212.83.0 (255.255.255.0) 最多容纳 254254 台主机 (对应的 IP 地址为 114.212.83.1 到 114.212.83.254)
+现给定 n 台主机的 IPv4 地址, 以及对应的子网掩码. 按字典序(网络地址为第一关键字, 子网掩码为第二关键字)输出其中出现过的不同的子网的网络地址以及该子网的最大容纳主机数.
+不会出现 255.255.255.255 和 255.255.255.254 作为子网掩码.
+
+子网由网络地址和子网掩码来唯一表示
+
+输入格式
+第一行先输入 n, 代表主机数.
+接下来 n 行, 每行包括一个 IPv4 地址和一个子网掩码.
+
+输出格式
+按字典序输出其中出现过的不同的子网的网络地址以及该子网的最大容纳主机数.
+
+样例
+Input
+4
+114.212.83.105 255.255.255.0
+192.168.0.1 255.255.0.0
+114.212.83.233 255.255.255.0
+192.168.233.233 255.255.0.0
+Output
+114.212.83.0 254
+192.168.0.0 65534
+数据范围与提示
+1≤n≤10000
+*/
+
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+struct mainFrame {
+	int ipv4[4];
+	int subnetMask[4];
+	int networkAddress[4];
+	long long max;
+};
+bool myCompare(mainFrame a, mainFrame b) //网络地址为第一关键字，子网掩码为第二关键字
+{
+	if (a.networkAddress[0] < b.networkAddress[0]) return true;
+	else if (a.networkAddress[0] == b.networkAddress[0] && a.networkAddress[1] < b.networkAddress[1]) return true;
+	else if (a.networkAddress[0] == b.networkAddress[0] && a.networkAddress[1] == b.networkAddress[1] && a.networkAddress[2] < b.networkAddress[2]) return true;
+	else if (a.networkAddress[0] == b.networkAddress[0] && a.networkAddress[1] == b.networkAddress[1] && a.networkAddress[2] == b.networkAddress[2] && a.networkAddress[3] < b.networkAddress[3]) return true;
+	else if (a.networkAddress[0] == b.networkAddress[0] && a.networkAddress[1] == b.networkAddress[1] && a.networkAddress[2] == b.networkAddress[2] && a.networkAddress[3] == b.networkAddress[3] && a.subnetMask[0]<b.subnetMask[0]) return true;
+	else if (a.networkAddress[0] == b.networkAddress[0] && a.networkAddress[1] == b.networkAddress[1] && a.networkAddress[2] == b.networkAddress[2] && a.networkAddress[3] == b.networkAddress[3] && a.subnetMask[0] == b.subnetMask[0] && a.subnetMask[1] < b.subnetMask[1]) return true;
+	else if (a.networkAddress[0] == b.networkAddress[0] && a.networkAddress[1] == b.networkAddress[1] && a.networkAddress[2] == b.networkAddress[2] && a.networkAddress[3] == b.networkAddress[3] && a.subnetMask[0] == b.subnetMask[0] && a.subnetMask[1] == b.subnetMask[1] && a.subnetMask[2]<b.subnetMask[2]) return true;
+	else if (a.networkAddress[0] == b.networkAddress[0] && a.networkAddress[1] == b.networkAddress[1] && a.networkAddress[2] == b.networkAddress[2] && a.networkAddress[3] == b.networkAddress[3] && a.subnetMask[0] == b.subnetMask[0] && a.subnetMask[1] == b.subnetMask[1] && a.subnetMask[2] == b.subnetMask[2] && a.subnetMask[3]<b.subnetMask[3]) return true;
+	else return false;
+}
+bool myEqual(mainFrame a, mainFrame b) //等于的条件是子网掩码和网络地址均相等
+{
+	bool flag = true;
+	for (int i = 0; i < 4; i++)
+		if (a.networkAddress[i] != b.networkAddress[i]) flag = false;
+	for (int i = 0; i < 4; i++)
+		if (a.subnetMask[i] != b.subnetMask[i]) flag = false;
+	return flag;
+}
+int main(void)
+{
+	int n; cin >> n;
+	vector<mainFrame> input(n);
+	for (int i = 0; i<n; i++)
+	{
+		for (int j = 0; j<4; j++) { cin >> input[i].ipv4[j]; if (!cin) { cin.clear(); cin.get(); j--; } }
+		for (int j = 0; j<4; j++) { cin >> input[i].subnetMask[j]; if (!cin) { cin.clear(); cin.get(); j--; } }
+		for (int j = 0; j < 4; j++) { input[i].networkAddress[j] = (input[i].ipv4[j])&(input[i].subnetMask[j]); }
+		int count = 0;
+		for (int j = 0; j<4; j++)   //数子网掩码一共有多少个1 max=2^(32-count)
+		{
+			int temp = input[i].subnetMask[j];
+			while (input[i].subnetMask[j] != 0)
+			{
+				if ((input[i].subnetMask[j] & 1)) count++; 
+				input[i].subnetMask[j] >>= 1;
+			}
+			input[i].subnetMask[j] = temp;
+		}
+		input[i].max = pow(2,32 - count) - 2;
+	}
+	sort(input.begin(), input.end(), myCompare);
+	auto it = unique(input.begin(), input.end(), myEqual);
+	input.erase(it, input.end());
+	for (int i = 0; i<input.size(); i++)
+	{
+		for (int j = 0; j < 3; j++) { cout << input[i].networkAddress[j] << "."; } cout << input[i].networkAddress[3] << ' ';
+		cout << input[i].max << endl;
+	}
+	return 0;
+}
