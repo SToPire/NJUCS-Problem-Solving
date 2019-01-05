@@ -1,0 +1,74 @@
+/*
+题目描述
+本题选自[DH] Problem 4.9.
+给定一个凸多边形，求多边形边界上的两点，使它们之间的距离最大。输出这个最大距离。
+
+输入格式
+第一行一个整数n (3≤n≤100000)，表示多边形的点数。
+接下来的n行，每行有两个整数x,y(∣x∣,∣y∣≤10^9)表示多边形的一个顶点。
+多边形的顶点以逆时针顺序给出。输入数据保证输入的点构成凸多边形，输入点中无两点重合，无三点共线。
+
+输出格式
+一行，表示答案。
+
+样例
+输入样例1
+4
+0 0
+1 0
+1 1
+0 1
+输出样例1
+1.414213562373095
+输入样例2
+3
+3 0
+0 4
+0 0
+输出样例2
+5
+数据范围与提示
+你可以输出任意多位小数，但仅当你的答案和标准答案的相对误差不超过10^−9时，你的答案才会被判定为正确。
+*/
+
+//旋转卡壳法
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+#include<iomanip>
+using namespace std;
+struct point {
+	double x, y;
+};
+double disPP(point a, point b) //计算两点间距离
+{
+	return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+}
+double disPL(point a, point b, point o) //计算点o到ab两点构成的直线距离(其实可以用矢量叉乘来判断,即三角形面积除以高)
+{
+	return abs((b.y - a.y)*(o.x - a.x) + (a.y - o.y)*(b.x - a.x)) / disPP(a, b);
+}
+double MAX(double a, double b, double c, double d, double e)
+{
+	return max(a, max(b, max(c, max(d, e))));
+}
+int main(void)
+{
+	int n;
+	cin >> n;
+	point *input = new point[n + 1];
+	for (int i = 0; i < n; i++) cin >> input[i].x >> input[i].y;
+	input[n] = input[0]; //最后一个点就是第一个点，形成了闭合图形
+	int j = 1;
+	double ans = 0.0;
+	for (int i = 0; i < n; i++)
+	{
+		while (disPL(input[i], input[i + 1], input[j]) < disPL(input[i], input[i + 1], input[j + 1]))
+			j = (j + 1) % n; //将j限定在0~n-1的范围内
+		ans = MAX(ans, disPP(input[i], input[j]	), disPP(input[i], input[j + 1]), disPP(input[i + 1], input[j]), disPP(input[i + 1], input[j + 1]));
+		//可能存在某两条边平行，所以需要求4个点间两两距离的最大值
+		//因为这里存在j+1这个下标，且j的最大值为n-1,必须保证input[n]存在，为input[0]
+	}
+	cout << setprecision(20) << ans;
+	return 0;
+}
