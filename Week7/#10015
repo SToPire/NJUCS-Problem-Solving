@@ -1,0 +1,98 @@
+/*
+题目描述
+读入两个长度分别为 n,m的正整数数列 {an},{bm},输出(Σ(i从1到n)Σ(j从1到m)f(abs(ai-bj))) mod 1000000007.其中f(n)为斐波那契数列第n项且f(n)=0。
+
+输入格式
+首先先读入两个正整数 n,m.
+第二行读入 n 个正整数, 表示数列 {ai}.
+第三行读入 m 个正整数, 表示数列 {bi}.
+
+输出格式
+输出一个非负整数表示答案。
+
+样例
+样例输入 1
+4 5
+1 2 3 4
+5 6 7 8 9
+样例输出 1
+112
+
+数据范围与提示
+Sa,Sb<=2*10^6
+*/
+
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+vector<int> Discretization_Count(vector<int> a, int n) //离散化并计数
+{
+	vector<int> b = a;
+	sort(b.begin(), b.end());
+	vector<int>::iterator uni_return = unique(b.begin(), b.end());
+	b.erase(uni_return, b.end());
+	int len = b.size();
+	for (int i = 0; i<len; i++)
+		for (int j = 0; j<n; j++)
+			if (a[j] == b[i])	a[j] = i + 1;
+	//此时a数组中存放着n个∈{1,2,...,len}中的元素(len<=n)
+	int i = 0;   //以下是一个空间复杂度为O(1)的计算各元素个数的算法
+	while (i<n)
+	{
+		int temp = a[i] - 1;  //每看向一个a[i],就去a[a[i]-1]那里.a[a[i]-1]最终要存放a[i]个数的相反数
+		if (temp<0)     //若temp为负数，说明a[i]为0或负数，a[i]上的数已经被统计过，移向下一个数
+		{
+			i++;
+			continue;
+		}
+		//↓当temp>=0，说明a[i]为>=1，即a[i]上的数尚未被统计↓
+		else if (a[temp]>0)  //如果a[temp]>0, 说明那里的数还没有被统计
+		{
+			a[i] = a[temp];  //于是把a[temp]移到a[i]这来，待会需要统计
+			a[temp] = -1;    //同时a[temp]被重置为-1，代表已经发现了一个数a[i]
+		}					 
+		else                 //如果a[temp]<=0,说明那里的数已经被统计过了
+		{					 //情况1：a[temp]==0.这表明a[i]这个数第一次出现.情况2:a[temp]<0,表明a[i]已经出现过若干次了																	
+			a[i] = 0;        //a[i]=0作为一个标记，代表a[i]上的数已经被统计过，同时表明尚未发现某个数i+1（因为假设以前发现过i+1,a[i]作为存储i+1的个数的地方，必然不会是正数）正数)
+			a[temp]--;		 //不管是那种情况，都让a[temp]--,代表又发现了一个数a[i]
+		}
+	}
+	return a; //本质是用下标与数进行对应，a[i]存储了i+1这个数个数的相反数
+}
+int main(void)
+{
+	vector<unsigned long long> v(1);
+	v.push_back(1);
+	for (int i = 2; i < 2000000; ++i)
+		v.push_back((v[i - 2] + v[i - 1]) % 1000000007);   //先存下斐波那契数列
+	int n, m;
+	cin >> n >> m;
+	vector<int> a(n, 0);
+	vector<int> b(m, 0);
+	for (int i = 0; i<n; i++) cin >> a[i];
+	for (int j = 0; j<m; j++) cin >> b[j];
+	vector<int> a_copy = Discretization_Count(a, n);   //a_copy和b_copy存储了a和b中（从小到大排序）各元素个数的相反数
+	vector<int> b_copy = Discretization_Count(b, m);
+	sort(a.begin(), a.end());
+	vector<int>::iterator uni_return_a = unique(a.begin(), a.end());
+	a.erase(uni_return_a, a.end());
+	sort(b.begin(), b.end());
+	vector<int>::iterator uni_return_b = unique(b.begin(), b.end());
+	b.erase(uni_return_b, b.end());
+	unsigned long long sum = 0;
+	vector<int>::iterator it_Acopy = a_copy.begin();
+	for (vector<int>::iterator it_A = a.begin(); it_A != a.end(); it_A++)
+	{
+		vector<int>::iterator it_Bcopy = b_copy.begin();
+		for (vector<int>::iterator it_B = b.begin(); it_B != b.end(); it_B++)
+		{
+
+			sum += (((((long long)*it_Acopy)*((long long)*it_Bcopy)) % 1000000007)*((v[abs(*it_A - *it_B)]) % 1000000007)) % 1000000007;
+			it_Bcopy++;
+		}
+		it_Acopy++;
+	}
+	cout << sum % 1000000007;
+	return 0;
+}
