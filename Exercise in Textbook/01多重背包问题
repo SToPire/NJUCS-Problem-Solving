@@ -1,0 +1,57 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+int main(void)
+{
+	int n, c;
+	cout << "请输入物品种类数和背包大小:" << endl;
+	cin >> n >> c;
+	int* w = new int[n];
+	int* q = new int[n];
+	int* p = new int[n];
+	cout << "请输入每种物品的个数，重量和价格:" << endl;
+	for (int i = 0; i < n; i++) cin >> q[i] >> w[i] >> p[i];
+	int* *ans = new int*[n];
+	for (int i = 0; i < n; i++) ans[i] = new int[c + 1];
+	for (int i = 0; i<n; i++) for (int j = 0; j<c + 1; j++) ans[i][j] = 0;
+	for (int j = 1; j<c + 1; j++)
+		ans[0][j] = min(j / w[0], q[0])*p[0];
+	for (int i = 1; i<n; i++)
+	{
+		for (int j = 1; j<c + 1; j++)
+		{
+			if (j<w[i])
+				ans[i][j] = ans[i - 1][j];
+			else                                           //ans[i][j]=max{a[i-1][j-k*w[i]]+k*p[i]} 其中k从0到min{q[i],j/w[i]}
+			{ 
+				ans[i][j] = ans[i - 1][j];
+				for (int k = 1; k <= min(q[i], j / w[i]); k++) if (ans[i - 1][j - k * w[i]] + k * p[i]>ans[i][j]) ans[i][j] = ans[i - 1][j - k * w[i]] + k * p[i];
+			}
+		}
+	}
+	int* anslist = new int[n];//找出具体每个物品要取几个
+	int i = n - 1, j = c; 
+	while (i>0)
+	{
+		for (int k = 0; k <= min(q[i], j / w[i]); k++)
+		{
+			if (ans[i - 1][j - k * w[i]] + k * p[i] == ans[i][j])
+			{
+				anslist[i] = k;
+				j = j - k * w[i];
+				i--;
+				break;
+			}
+		}
+	}
+	anslist[i] = min(j / w[0], q[0]);
+	cout << "你的包里最多能塞下" << ans[n - 1][c] << "价值的物品。" << endl;;
+	for (int i = 0; i<n; i++) cout << "你需要取出" << anslist[i] << "个" << i + 1 << "号物品" << endl;
+	delete[] w; delete[] q; delete[]p;
+	for (int i = 0; i < n; i++) delete[] ans[i];
+	delete[] ans;
+	delete[] anslist;
+	system("pause");
+	return 0;
+}
