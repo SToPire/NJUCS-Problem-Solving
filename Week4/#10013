@@ -79,3 +79,43 @@ void bit(bool* bin, int t, int count_1, vector<int> position) //position数组�
 		bit(bin, t + 1, count_1, position);
 	}
 }
+
+
+
+非递归法:     //二进制数中每遇到一个1，结果中这一位0或1。若该位为0，就是ans中已有的数；若该位为1，就把ans中已有的数加上2^(32-i)，补入ans
+#include<iostream>
+#include<vector>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+void to_bin(bool* input, unsigned int n)
+{
+	for (int i = 31; i >= 0; i--)
+	{
+		input[i] = n % 2;
+		n = n / 2;
+	}
+}
+int main(void)
+{
+	unsigned int n;
+	cin >> n;
+	bool bin[32];
+	to_bin(bin, n);
+	unsigned int ans[40000] = { 0 };
+	for (int i = 1; i < 40000; i++) ans[i] = -1;
+	int num = 1;
+	for (int i = 31; i>=0; i--)
+	{
+		if (bin[i] == 1)
+		{
+			for (int j = 0; j < num; j++)
+			{
+				ans[j + num] = ans[j] + pow(2, 31-i);
+			}
+			num *= 2;
+		}
+	}
+	for (int i = 0; i < 40000; i++) if (ans[i] != -1) cout << ans[i] << " ";
+	return 0;
+}
