@@ -1,0 +1,37 @@
+/*
+题目描述
+因为大家会积分，太难的积分助教不会，所以给大家出点简单的。
+我们来求多项式的积分！
+给定一个n次多项式 f(x)=Σ(i从0到n)(ai*x^i)  求2520*∫(a到b)f(x)dx
+
+输入格式
+第一行3个正整数n,a,b，1≤n≤9,1≤a≤b≤20含义同题目。
+第二行n+1个非负整数，0≤a0,⋯,an≤20分别表示对应的系数
+
+输出格式
+输出一行为答案
+
+样例
+Input
+1 1 2
+1 1
+Output
+6300
+*/
+
+#include<iostream>
+#include<vector>
+#include<cmath>
+using namespace std;
+int main(void)
+{
+	long long sum=0;
+	int n,a,b;
+	cin>>n>>a>>b;
+	vector<int> coefficient(n+1);
+	for(int i=0;i<n+1;i++)
+		cin>>coefficient[i];
+	for(int i=0;i<=n;i++)
+		sum+=2520/(i+1)*coefficient[i]*(pow(b,i+1)-pow(a,i+1));
+	cout<<sum;
+}
