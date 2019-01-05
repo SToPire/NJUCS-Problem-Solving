@@ -1,0 +1,88 @@
+/*
+题目描述
+本题选自[DH] Problem 4.12
+给定顶点数为n，边数为m的带权无向连通图G，所有顶点编号为1,2,⋯,n.
+求 G 的最小生成树的边权和。
+
+输入格式
+第一行两个整数 n,m (1≤n≤200000,0≤m≤500000)，含义见题目描述。
+接下来的m行，每行3个整数u,v,w(1≤u,v≤n,1≤w≤10^9)，表示一条连接顶点u,v,权值为w的边。
+输入数据中可能含有环边（loop, 即u=v的边），你可以直接忽略这些边
+
+输出格式
+输出一个整数，表示最小生成树的权值和。
+
+样例
+输入样例
+7 12
+1 2 9
+1 5 2
+1 6 3
+2 3 5
+2 6 7
+3 4 6
+3 7 3
+4 5 6
+4 7 2
+5 6 3
+5 7 6
+6 7 1
+输出样例
+16
+
+数据范围与提示
+1.你可以使用<algorithm>中的std::sort()函数为所有边排序，然后再从排序结果中依次选取每一条边。
+2.判断加入一条新边u,vu,vu,v是否会形成圈(cycle)，可以使用union-find数据结构。
+  我们把互相联通的一组节点视为一个集合。如果合并前u,vu, vu,v已经属于同一集合，那么我们不能将边u,vu, vu,v加入最小生成树中，否则会引入圈；
+  否则我们将该边加入最小生成树中，并合并u,vu, vu,v所在的集合。
+*/
+
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+struct path {
+	int u, v;
+	long long w;
+};
+class UnionFind {
+	vector<int> f;
+
+public:
+	UnionFind(int n = 0) : f(n + 1) {
+		for (int i = 1; i <= n; i++)
+			f[i] = i;
+	}
+	int find(int x) {
+		if (f[x] == x) return x;
+		return f[x] = find(f[x]);
+	}
+	void merge(int u, int v) {
+		u = find(u); v = find(v);
+		if (u < v) f[v] = u; else f[u] = v;
+	}
+};
+bool cmp(path a, path b) { return (a.w < b.w); }
+int main(void) //贪心算法
+{
+	int n, m, count = 0, i = 0;
+	long long sum = 0;
+	cin >> n >> m;
+	vector<path> input(m);
+	for (int i = 0; i < m; i++) cin >> input[i].u >> input[i].v >> input[i].w;
+	sort(input.begin(), input.end(), cmp);
+	UnionFind uf(n);
+	while (count < n - 1) //n个顶点的最小生成树必然有n-1条边
+	{
+		if (uf.find(input[i].u) != uf.find(input[i].v))
+		{
+			uf.merge(input[i].u, input[i].v);
+			sum += input[i].w;
+			count++;
+			i++;
+		}
+		else i++;
+	}
+	cout << sum;
+	return 0;
+}
