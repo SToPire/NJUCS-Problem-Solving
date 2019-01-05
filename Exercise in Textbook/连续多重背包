@@ -1,0 +1,48 @@
+//贪心 
+#include<iostream>
+#include<algorithm>
+using namespace std;
+struct item{
+		int q;int w;int p;double ratio;
+		int oriLocation;         //在排序后找到原来的位置 
+		double num=0.0; 
+	};
+bool compare1(const item& it1, const item& it2){ return it1.ratio>it2.ratio; }
+bool compare2(const item& it1, const item& it2){ return it1.oriLocation<it2.oriLocation;}
+int main()
+{
+	int n;
+	double c;
+	double result=0.0; 
+	cout << "请输入物品种类数和背包大小:" << endl;
+	cin >> n >> c;
+	
+	item *list=new item[n];
+	cout << "请输入每种物品的个数，重量和价格:" << endl;
+	for (int i = 0; i < n; i++) 
+	{
+		cin >> list[i].q >> list[i].w >> list[i].p; 
+		list[i].ratio=(double)list[i].p/list[i].w;
+		list[i].oriLocation=i;
+	} 
+	sort(list,list+n,compare1);      //按照权重排序 
+	for(int i=0;i<n;i++)
+	{
+		if(c>=list[i].w*list[i].q)
+		{
+			c-=list[i].w*list[i].q;
+			result+=list[i].p*list[i].q;
+			list[i].num=list[i].q;       //记录取用量 
+		}
+		else
+		{
+			result+=list[i].p*(c/list[i].w);
+			list[i].num=c/list[i].w;
+			break;
+		}
+	}
+	sort(list,list+n,compare2);   //恢复原顺序 
+	cout <<"你的包里最多能塞下"<< result<<"价值的物品。"; 
+	for(int i=0;i<n;i++) cout<<"你需要取出"<<list[i].num<<"个"<<i+1<<"号物品"<<endl;
+	return 0;
+}
