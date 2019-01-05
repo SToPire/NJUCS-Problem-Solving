@@ -1,0 +1,89 @@
+/*
+题目描述
+输入两个正整数, 输出其进行位运算异或之后的值.
+
+输入格式
+两个正整数 A,B
+
+输出格式
+输出 A xor B
+
+样例
+样例输入 1
+13 107
+样例输出 1
+102
+样例输入 2
+10000000000007 23333333333333333333333
+样例输出 2
+23333333340925666522450
+数据范围与提示
+1≤A,B≤10^1000
+*/
+
+#include<iostream>
+#include<vector>
+#include<cctype>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+vector<int> toRBinary(vector<int> a)//得到a的反序二进制字符串，末尾多一个0
+{
+	vector<int> ans(0);
+	int sum = 1;
+	while (sum != 0)
+	{
+		sum = 0;
+		for (int i = 0; i < a.size(); i++)
+		{
+			sum += a[i];
+			int temp = a[i] / 2;
+			if (i + 1 == a.size()) ans.push_back(a[i] % 2);
+			else a[i + 1] += (a[i] % 2) * 10;
+			a[i] = temp;
+		}
+	}
+	return ans;
+}
+int main(void)
+{
+	vector<int> a(0);
+	vector<int> b(0);
+	char temp;
+	while (isdigit(temp = cin.get())) { a.push_back(temp - '0'); }
+	while (isdigit(temp = cin.get())) { b.push_back(temp - '0'); }
+	vector<int> a_Rbinary = toRBinary(a);
+	vector<int> b_Rbinary = toRBinary(b);
+	unsigned int len = max(a_Rbinary.size(), b_Rbinary.size());
+	while (a_Rbinary.size() != len) a_Rbinary.push_back(0);
+	while (b_Rbinary.size() != len) b_Rbinary.push_back(0);
+	vector<int> result;
+	for (int i = 0; i < len; i++) if (a_Rbinary[i] == b_Rbinary[i]) result.push_back(0); else result.push_back(1);
+	vector<int> number(2000, 0); number[1] = 1; //以下为二进制转十进制
+	vector<int> ans(2000, 0);
+	int n = 1, m = 1;
+	for (int i = 0; i < len; i++)
+	{
+		if (result[i] == 1)
+		{
+			for (int j = 1; j <= n || ans[j] != 0; j++)
+			{
+				m = max(j, m); //m更新成不是0的最高位下标数
+				ans[j] += number[j];
+				ans[j + 1] += ans[j] / 10;
+				ans[j] %= 10;
+			}
+		}
+		for (int j = 1; j <= n; j++) number[j] <<= 1;
+		for (int j = 1; j <= n || number[j] != 0; j++)//快速幂的思想
+		{
+			n = max(j, n); //n更新成最高位的下标数
+			number[j + 1] += number[j] / 10;
+			number[j] %= 10;
+		}
+	}
+	for (int i = m; i >= 1; i--) cout << ans[i];
+
+	system("pause");
+	return 0;
+}
