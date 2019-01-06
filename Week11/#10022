@@ -93,3 +93,37 @@ int main(void)
 	}
 	return 0;
 }
+
+
+
+//Designed by Acesrc
+#include <bits/stdc++.h>
+using namespace std;
+
+union IP {                   //union中各元素共用内存
+  uint32_t ip;
+  uint8_t _ip[4];
+} w, mask;
+
+#define ip_format "%hhu.%hhu.%hhu.%hhu"
+
+map<pair<uint32_t, uint32_t>, uint32_t> mp;
+
+int main(int argc, char **argv) {
+  int n;
+  scanf("%d", &n);
+
+  for (int i = 0; i < n; i++) {
+    scanf(ip_format " " ip_format,                     //用scanf适配题目的输入格式
+        &w._ip[3], &w._ip[2], &w._ip[1], &w._ip[0],    //oj是小端模式
+        &mask._ip[3], &mask._ip[2], &mask._ip[1], &mask._ip[0]);
+    mp[make_pair(w.ip & mask.ip, mask.ip)] = (1LL << (32 - __builtin_popcount(mask.ip))) - 2; //__builtin_popcount()返回一个数二进制中1的个数
+  }//↑这里直接用两个ip做与运算，效果与四个数各自做与运算是一样的             ↑2的幂的位运算求法
+  for (auto &p : mp) {
+    auto w = *reinterpret_cast<const IP *>(&p.first.first); //map起到了去重功能
+    printf(ip_format " %u\n",
+        w._ip[3], w._ip[2], w._ip[1], w._ip[0], 
+        p.second);
+  }
+  return 0;
+}
