@@ -50,3 +50,24 @@ int main(void)
 		cout<<*it1<<" ";
 	return 0;	
 }
+
+//map版本
+#include<iostream>
+#include<vector>
+#include<map>
+using namespace std;
+int main()
+{
+	int n;
+	cin >> n;
+	int p,count=1;
+	map<int, int> mymap;
+	for (int i = 0; i < n; i++)
+	{
+		cin >> p;
+		auto temp = mymap.insert({ p,count }); //insert返回一个pair,first为插入元素的迭代器,second为是否成功插入
+		if (temp.second) count++;              //temp.second=true说明插入成功，即map中原先没有该元素
+		cout << mymap[p]<<' ';
+	}
+	return 0;
+}
