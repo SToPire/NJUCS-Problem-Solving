@@ -109,8 +109,8 @@ void QuineMcCluskey(vector<implicant>& v, set<int> s)
 		}
 		if (flag) v2.push_back(a);
 	}
-	setMinus(s, selected);                            //递归地进行这一过程
-	QuineMcCluskey(v2, s);
+	setMinus(s, selected);                          //从待被覆盖的整数集合中减去已被实质蕴含项覆盖的部分  
+	QuineMcCluskey(v2, s);							//递归地进行这一过程
 }
 int main(void)
 {
