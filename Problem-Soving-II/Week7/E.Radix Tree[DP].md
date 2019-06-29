@@ -39,7 +39,7 @@ $0 \le a_i < 2^{20}$
 
 于是有递推关系
 $$
-dp[i][j]= \begin{cases}  dp[i][j-1] &\text{第k位置位} \\ dp[i][j-1]+dp[i \oplus2^k][j-1] & \text{第k位非置位}\end{cases}
+dp[i][j]= \begin{cases}  dp[i][j-1] &\text{第j位非置位} \\ dp[i][j-1]+dp[i \oplus2^k][j-1] & \text{第j位置位}\end{cases}
 $$
 
 
