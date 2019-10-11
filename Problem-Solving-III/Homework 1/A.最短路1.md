@@ -46,67 +46,92 @@ Dijkstra样板题。维护一个优先队列，每次取出d值最小的点。�
 
 
 ```
-#include<iostream>
-#include<algorithm>
-#include<queue>
+#include <algorithm>
+#include <iostream>
+#include <queue>
 using namespace std;
 #define maxm 200005
 #define maxn 100005
 #define INF 1e18
 inline int read()
 {
-	int x = 0, k = 1;
-	char c = getchar();
-	while (c <'0' || c>'9') { if (c == '-')k = -1; c = getchar(); }
-	while (c >= '0' && c <= '9') { x = (x << 3) + (x << 1) + c - '0'; c = getchar(); }
-	return x * k;
+    int x = 0, k = 1;
+    char c = getchar();
+    while (c < '0' || c > '9')
+    {
+        if (c == '-')
+            k = -1;
+        c = getchar();
+    }
+    while (c >= '0' && c <= '9')
+    {
+        x = (x << 3) + (x << 1) + c - '0';
+        c = getchar();
+    }
+    return x * k;
 }
-struct Edge {
-	int u, v, w, next;
-} e[maxm];
-int n,m,cnt, done[maxn], first[maxn];
-//{节点编号，d值}
-vector<pair<int, long long>> d(maxn, { 0,INF });
-bool cmp(const pair<int, long long > &i, pair<int, long long> &j) {
-	return i.second > j.second;
-}
-priority_queue<pair<int, long long>, vector<pair<int,long long>>, decltype(cmp)*> heap(cmp);
+struct Node{
+    bool done;
+    int first;
+    long long d;
+
+    friend bool operator<(const Node&l, const Node&r) {
+        return l.d > r.d;
+    }
+} V[maxn];
+struct Edge{
+    int u, v, w, next;
+} E[maxm];
+int n, m, cnt;
 void add(int u, int v, int w)
 {
-	e[++cnt].u = u;
-	e[cnt].v = v;
-	e[cnt].w = w;
-	e[cnt].next = first[u];
-	first[u] = cnt;
+    E[++cnt].u = u;
+    E[cnt].v = v;
+    E[cnt].w = w;
+    E[cnt].next = V[u].first;
+    V[u].first = cnt;
 }
-void dijkstra() 
+priority_queue<Node> heap;
+void dijkstra()
 {
-	for (int i = 1; i <= n; i++) d[i].first = i;
-	d[1].second=0; heap.push(d[1]);
-	while (!heap.empty()) {
-		auto tmp = heap.top(); heap.pop();
-		if (done[tmp.first]) continue;
-		done[tmp.first] = 1;
-		for (int k = first[tmp.first]; k; k = e[k].next) {
-			d[e[k].v].second = min(d[e[k].v].second,tmp.second + e[k].w);
-			heap.push(d[e[k].v]);
-		}
-	}
+    for (int i = 1; i <= n; i++){
+        V[i].done = false;
+        V[i].d = INF;
+    }
+    V[1].d = 0;
+    heap.push(V[1]);
+    while (!heap.empty()){
+        auto tmp = heap.top();
+        heap.pop();
+        for (int k = tmp.first; k; k = E[k].next){
+            if (!V[E[k].v].done && V[E[k].v].d > tmp.d + E[k].w){
+                V[E[k].v].d = tmp.d + E[k].w;
+                heap.push(V[E[k].v]);
+            }
+        }
+        tmp.done=true;
+    }
 }
 int main()
 {
-	n = read(), m = read();	
-	for (int i = 1, t1, t2, t3; i <= m; i++) {
-		t1 = read(); t2 = read(); t3 = read();
-		add(t1, t2, t3);
-	}
-	dijkstra();
-	for (int i = 1; i <= n; i++) {
-		if (d[i].second == INF) printf("%d ", -1);
-		else printf("%ld ", d[i].second);
-	}
-	system("pause");
-	return 0;
+    n = read(), m = read();
+    for (int i = 1, t1, t2, t3; i <= m; i++)
+    {
+        t1 = read();
+        t2 = read();
+        t3 = read();
+        add(t1, t2, t3);
+    }
+    dijkstra();
+    for (int i = 1; i <= n; i++)
+    {
+        if (V[i].d == INF)
+            printf("%d ", -1);
+        else
+            printf("%lld ", V[i].d);
+    } 
+    system("pause");
+    return 0;
 }
 ```
 
