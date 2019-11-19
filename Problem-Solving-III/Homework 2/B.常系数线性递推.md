@@ -88,58 +88,76 @@ X_{p-k+1}=
 $$
 则有$AX_i=X_{i+1}$，因此要计算$a_p$我们只要计算$A^{p-k+1}$并与$X_0$相乘即可，可用快速幂加速运算。
 
+
+
+虽然这里没有，但对于系数/初值有负数的情况，要注意负数取模应为加上模值再取模。
+
 ```c++
-#include<iostream>
+#include <iostream>
 using namespace std;
 #define maxk 65
-#define maxp 2000000005
 #define MOD 1000000007
 #define ull unsigned long long
 inline int read()
 {
-	int x = 0, k = 1;
-	char c = getchar();
-	while (c <'0' || c>'9') { if (c == '-')k = -1; c = getchar(); }
-	while (c >= '0' && c <= '9') { x = (x << 3) + (x << 1) + c - '0'; c = getchar(); }
-	return x * k;
+    int x = 0, k = 1;
+    char c = getchar();
+    while (c < '0' || c > '9') {
+        if (c == '-')
+            k = -1;
+        c = getchar();
+    }
+    while (c >= '0' && c <= '9') {
+        x = (x << 3) + (x << 1) + c - '0';
+        c = getchar();
+    }
+    return x * k;
 }
-struct matrix{
+struct matrix {
     ull a[maxk][maxk];
-    matrix(){
-        for (int i = 0; i < maxk;i++)
-            for (int j = 0; j < maxk;j++)
+    matrix()
+    {
+        for (int i = 0; i < maxk; i++)
+            for (int j = 0; j < maxk; j++)
                 a[i][j] = 0;
     }
-    matrix(int n):matrix(){
-        for (int i = 0; i < maxk;i++)
+    matrix(int n)
+        : matrix()
+    {
+        for (int i = 0; i < maxk; i++)
             a[i][i] = n;
     }
-    matrix operator%(int n){
-        for (int i = 0; i < maxk;i++)
-            for (int j = 0; j < maxk;j++)
+    matrix operator%(int n)
+    {
+        for (int i = 0; i < maxk; i++) {
+            for (int j = 0; j < maxk; j++) {
+                a[i][j] += MOD;
                 a[i][j] %= MOD;
+            }
+        }
         return *this;
     }
 };
-matrix operator*(const matrix& l,const matrix& r)
+matrix operator*(matrix& l, matrix& r)
 {
     matrix result;
-    for (int i = 0; i < maxk;i++){
-        for (int j = 0; j < maxk;j++){
-            for (int k = 0; k < maxk;k++){
+    for (int i = 0; i < maxk; i++) {
+        for (int j = 0; j < maxk; j++) {
+            for (int k = 0; k < maxk; k++) {
                 result.a[i][j] += (l.a[i][k] * r.a[k][j]) % MOD;
-                result.a[i][j] %= MOD;
             }
+            result.a[i][j] += MOD;
+            result.a[i][j] %= MOD;
         }
     }
     return result;
 }
-matrix bitpower(matrix M,int n)
+matrix bitpower(matrix M, int n)
 {
     matrix res = matrix(1);
     matrix base = M;
-    while(n){
-        if(n&1){
+    while (n) {
+        if (n & 1) {
             res = (res * base) % MOD;
         }
         base = (base * base) % MOD;
@@ -155,18 +173,19 @@ int main(void)
     k = read(), p = read();
     matrix M;
     M.a[1][k + 1] = read();
-    for (int i = 1; i <= k;i++)
+    for (int i = 1; i <= k; i++)
         M.a[1][i] = read();
-    for (int i = k; i >= 1;i--)
+    for (int i = k; i >= 1; i--)
         A[i] = read();
     A[k + 1] = 1;
-    for (int i = 1; i <= k - 1;i++)
+    for (int i = 1; i <= k - 1; i++)
         M.a[i + 1][i] = 1;
     M.a[k + 1][k + 1] = 1;
-    matrix powM=bitpower(M, p - k + 1);
+    matrix powM = bitpower(M, p - k + 1);
     ull res = 0;
-    for (int i = 1; i <= k + 1;i++){
+    for (int i = 1; i <= k + 1; i++) {
         res += (powM.a[1][i] * A[i]) % MOD;
+        res += MOD;
         res %= MOD;
     }
     cout << res;
