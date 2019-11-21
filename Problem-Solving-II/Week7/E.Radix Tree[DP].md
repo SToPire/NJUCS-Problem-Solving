@@ -35,15 +35,16 @@ $0 \le a_i < 2^{20}$
 
 （子集：一个数的子集定义为，他的二进制表示中的置位可为1或0，非置位只能为0的数。）
 
-例如$dp[1011010][3] ={1011010,1010010,1011000,1001000}$
+例如$dp[1011010][3] $包括${1011010,1010010,1011000,1001000}$
 
 于是有递推关系
 $$
-dp[i][j]= \begin{cases}  dp[i][j-1] &\text{第j位非置位} \\ dp[i][j-1]+dp[i \oplus2^k][j-1] & \text{第j位置位}\end{cases}
+dp[i][j]= \begin{cases}  dp[i][j-1] &\text{第j位非置位} \\ dp[i][j-1]+dp[i \oplus2^j][j-1] & \text{第j位置位}\end{cases}
 $$
 
+注意这里$i \oplus2^j$一定比$i$小，保证了从小到大枚举$i$的顺序是正确的。
 
-```
+```c++
 #include<iostream>
 #include<vector>
 #include<algorithm>
