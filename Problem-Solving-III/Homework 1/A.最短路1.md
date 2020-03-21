@@ -97,7 +97,7 @@ void dijkstra()
     for (int i = 1; i <= n; i++){
         V[i].done = false;
         V[i].d = INF;
-    }
+    }	
     V[1].d = 0;
     heap.push(V[1]);
     while (!heap.empty()){
